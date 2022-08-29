@@ -6,6 +6,7 @@ import { Alert } from './components/Alert'
 import { Icon } from './components/Icon';
 import userApi from './api/usersApi'
 import { CreateUserForm } from './components/CreateUserForm';
+import { UpdateUserForm } from './components/UpdateUserForm';
 
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
   const [error, setError] = useState(null);
   const [users, setUsers] = useState([]);
   const [showCreateUser, setShowCreateUser] = useState(false)
+  const [showUpdateUser, setShowUpdateUser] = useState(false)
+  const [userIdForUpdate, setUserIdForUpdate] = useState()
   
 
   /* Get All user from API */
@@ -35,6 +38,12 @@ function App() {
     getUsers();
   }, [])
 
+
+  const handleEditUser = (id) => {
+    setUserIdForUpdate(id);
+    setShowUpdateUser(true)
+  }
+
   
 
   return (
@@ -45,6 +54,7 @@ function App() {
       {error && <Alert message={error} />}  
 
       {showCreateUser && <CreateUserForm users={users} setUsers={setUsers} hideForm={setShowCreateUser}/>}
+      {(showUpdateUser && userIdForUpdate) && <UpdateUserForm users={users} setUsers={setUsers} hideForm={setShowUpdateUser} idUser={userIdForUpdate}/>}
           
 
       <section>
@@ -77,7 +87,7 @@ function App() {
                         <td>{new Date(attributes.publishedAt).toDateString()}</td>
                         <td>
                           <div className="btn-group btn-group-sm" role="group">
-                            <button type="button" className="btn btn-warning"><Icon icon="faPenToSquare" /></button>
+                            <button type="button" className="btn btn-warning" onClick={ () => handleEditUser(id)}><Icon icon="faPenToSquare" /></button>
                             <button type="button" className="btn btn-danger"><Icon icon="faTrash" /></button>
                           </div>
                         </td>
