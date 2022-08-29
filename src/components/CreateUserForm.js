@@ -7,6 +7,8 @@ import usersApi from '../api/usersApi';
 
 export const CreateUserForm = ({ users, setUsers, hideForm }) => {
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
+
     const { name, dateBirth, idNumber, onChange, clearInput } = useForm({
         name: '',
         dateBirth: '',
@@ -17,6 +19,8 @@ export const CreateUserForm = ({ users, setUsers, hideForm }) => {
     const handleFormSubmit = async (e) => {
         e.preventDefault()
         setError(null);
+        setSuccess(null);
+
         try {
             const { data: { data } } = await usersApi.post('/v2-users',
                 { data: { name, dateBirth, idNumber } });
@@ -27,6 +31,7 @@ export const CreateUserForm = ({ users, setUsers, hideForm }) => {
                 ...users,
                 data
             ])
+            setSuccess("User created successfull")
 
         } catch ({ code }) {
             if (code === "ERR_BAD_REQUEST")
@@ -37,6 +42,7 @@ export const CreateUserForm = ({ users, setUsers, hideForm }) => {
         <section className='mb-2'>
             <div className='card'>
                 <div className='card-body'>
+                    {success && <Alert message={success} type="success"/>}
                     {error && <Alert message={error} />} 
 
                     <h3>Create User</h3>
