@@ -5,7 +5,9 @@ import {
     faPlus,
     faEye,
     faPenToSquare,
-    faTrash
+    faTrash,
+    faAngleLeft,
+    faAngleRight
 } from '@fortawesome/free-solid-svg-icons' // <-- import styles to be used
 
 
@@ -13,7 +15,9 @@ const myIcons = {
     faPlus,
     faEye,
     faPenToSquare,
-    faTrash
+    faTrash,
+    faAngleLeft,
+    faAngleRight
 }
 
 export const Icon = ({ icon }) => {

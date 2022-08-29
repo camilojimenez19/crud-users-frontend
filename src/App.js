@@ -12,9 +12,10 @@ import { ConfirmAlert } from './components/ConfirmAlert';
 
 function App() {
 
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState();
   const [showCreateUser, setShowCreateUser] = useState(false)
   const [showUpdateUser, setShowUpdateUser] = useState(false)
   const [userIdForUpdate, setUserIdForUpdate] = useState()
@@ -24,13 +25,20 @@ function App() {
   const getUsers = async () => {
     setError(null);
     try {
-      const { data: { data, meta }, status } = await userApi.get('/v2-users', { params: { "pagination[pageSize]": 10 } });
-      console.log(meta)
-      
+      const { data: { data, meta }, status } = await userApi.get(
+        '/v2-users',
+        {
+          params: {
+            "pagination[pageSize]": 5,
+            "pagination[page]": page
+          }
+        }
+      );
+
       if (status !== 200)
         throw new Error();
 
-      setUsers(data);
+      setUsers({ data, meta });
     } catch (error) {
       setError("There is error with user API ")
     }
@@ -38,12 +46,13 @@ function App() {
 
   useEffect(() => {
     getUsers();
-  }, [])
+  }, [page])
 
   /* Handle for edit user */
   const handleEditUser = (id) => {
     setUserIdForUpdate(id);
-    setShowUpdateUser(true)
+    setShowUpdateUser(true);
+    
   }
 
   /* Handle for delete user */
@@ -54,9 +63,19 @@ function App() {
 
       setSuccess("User deleted sucessfull");
       setTimeout(() => setSuccess(null), 1500);
+      getUsers();
     } catch (error) {
       setError("There is error with user API ")
     }
+  }
+
+  /* Handle for pagination */
+  const onChangePage = (next) => {
+
+    const { pagination } = users.meta
+    if (page + next <= 0) return;
+    if (page + next > pagination.pageCount) return;
+    setPage(page + next);
   }
 
 
@@ -69,8 +88,8 @@ function App() {
       {error && <Alert message={error} />}
       {success && <Alert message={success} type="success" />}
 
-      {showCreateUser && <CreateUserForm users={users} setUsers={setUsers} hideForm={setShowCreateUser} />}
-      {(showUpdateUser && userIdForUpdate) && <UpdateUserForm users={users} setUsers={setUsers} hideForm={setShowUpdateUser} idUser={userIdForUpdate} />}
+      {showCreateUser && <CreateUserForm hideForm={setShowCreateUser} getUser={getUsers}/>}
+      {(showUpdateUser && userIdForUpdate) && <UpdateUserForm hideForm={setShowUpdateUser} idUser={userIdForUpdate}  getUser={getUsers}/>}
 
 
       <section>
@@ -92,7 +111,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users && users.map(user => {
+                  {users && users.data.map(user => {
                     const { id, attributes } = user
 
                     return (
@@ -113,9 +132,13 @@ function App() {
                   }
                 </tbody>
               </table>
-              <div className='btn-group btn-group-sm'>
-                  <button type="button" className='btn btn-outline-primary'></button>
-              </div>
+              <nav>
+                <ul className="pagination">
+                  <li className="page-item" onClick={() => onChangePage(-1)}><a className="page-link" href="/#"><Icon icon="faAngleLeft" /></a></li>
+                  <li className="page-item"><a className="page-link" href="/#">{page}</a></li>
+                  <li className="page-item" onClick={() => onChangePage(1)}><a className="page-link" href="/#"><Icon icon="faAngleRight" /></a></li>
+                </ul>
+              </nav>
             </div>
           </div>
         </div>

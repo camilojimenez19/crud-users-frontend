@@ -5,7 +5,7 @@ import { InputDate } from '../components/InputDate';
 import { Alert } from '../components/Alert'
 import usersApi from '../api/usersApi';
 
-export const CreateUserForm = ({ users, setUsers, hideForm }) => {
+export const CreateUserForm = ({  hideForm, getUser }) => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
@@ -22,17 +22,13 @@ export const CreateUserForm = ({ users, setUsers, hideForm }) => {
         setSuccess(null);
 
         try {
-            const { data: { data } } = await usersApi.post('/v2-users',
+            await usersApi.post('/v2-users',
                 { data: { name, dateBirth, idNumber } });
 
 
             clearInput();
-            setUsers([
-                ...users,
-                data
-            ])
-            setSuccess("User created successfull")
-
+            setSuccess("User created successfull");
+            getUser();
         } catch ({ code }) {
             if (code === "ERR_BAD_REQUEST")
                 setError("All fields are riquered")

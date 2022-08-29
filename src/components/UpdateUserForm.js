@@ -5,7 +5,7 @@ import { InputDate } from '../components/InputDate';
 import { Alert } from '../components/Alert'
 import usersApi from '../api/usersApi';
 
-export const UpdateUserForm = ({ hideForm, idUser }) => {
+export const UpdateUserForm = ({ hideForm, idUser, getUser }) => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
@@ -47,7 +47,8 @@ export const UpdateUserForm = ({ hideForm, idUser }) => {
             await usersApi.put(`/v2-users/${idUser}`,
                 { data: { name, dateBirth, idNumber } });
 
-            setSuccess("User updated successfull")
+            setSuccess("User updated successfull");
+            getUser();
         } catch (error) {
             setError("All fields are riquered")
         }
