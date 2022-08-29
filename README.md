@@ -20,6 +20,9 @@ Después de clonar el proyecto debes ejecutar los siguientes comandos para ejecu
 
 > IMPORTANTE: Recuarda que para ejecutar este proyecto, primero debes haber ejecutado el [backend](https://github.com/camilojimenez19/crud-users-backend)
 
+Debes copiar y pegar el contenido del archivo de **.env.example** y pegarlo en un nuevo archivo llamado **.env** (En la raíz del proyecto), agregando la URL de la API en la variable de entorno **REACT_APP_API_URL**. 
+Después ejecuta los siguientes comandos para ejecutar el proyecto.
+
 ```
 npm install
 npm start
