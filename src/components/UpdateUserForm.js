@@ -43,13 +43,10 @@ export const UpdateUserForm = ({ hideForm, idUser }) => {
 
             if(name === "" || dateBirth === "" || idNumber === "" )
                 throw new Error()
-
             
-            const { data: { data } } = await usersApi.put(`/v2-users/${idUser}`,
+            await usersApi.put(`/v2-users/${idUser}`,
                 { data: { name, dateBirth, idNumber } });
 
-
-            // console.log(data)
             setSuccess("User updated successfull")
         } catch (error) {
             setError("All fields are riquered")

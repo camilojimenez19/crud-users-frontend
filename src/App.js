@@ -7,23 +7,26 @@ import { Icon } from './components/Icon';
 import userApi from './api/usersApi'
 import { CreateUserForm } from './components/CreateUserForm';
 import { UpdateUserForm } from './components/UpdateUserForm';
+import { ConfirmAlert } from './components/ConfirmAlert';
 
 
 function App() {
 
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [users, setUsers] = useState([]);
   const [showCreateUser, setShowCreateUser] = useState(false)
   const [showUpdateUser, setShowUpdateUser] = useState(false)
   const [userIdForUpdate, setUserIdForUpdate] = useState()
-  
+
 
   /* Get All user from API */
   const getUsers = async () => {
     setError(null);
     try {
-      const { data: { data }, status } = await userApi.get('/v2-users', { params: { "pagination[pageSize]": 10 } });
-
+      const { data: { data, meta }, status } = await userApi.get('/v2-users', { params: { "pagination[pageSize]": 10 } });
+      console.log(meta)
+      
       if (status !== 200)
         throw new Error();
 
@@ -31,31 +34,44 @@ function App() {
     } catch (error) {
       setError("There is error with user API ")
     }
-
   }
 
   useEffect(() => {
     getUsers();
   }, [])
 
-
+  /* Handle for edit user */
   const handleEditUser = (id) => {
     setUserIdForUpdate(id);
     setShowUpdateUser(true)
   }
 
-  
+  /* Handle for delete user */
+  const handleDeleteUser = async (id) => {
+    setError(null);
+    try {
+      await userApi.delete(`/v2-users/${id}`);
+
+      setSuccess("User deleted sucessfull");
+      setTimeout(() => setSuccess(null), 1500);
+    } catch (error) {
+      setError("There is error with user API ")
+    }
+  }
+
+
 
   return (
     <>
       {/* Header */}
       <Header title="CRUD Users FrontEnd" />
 
-      {error && <Alert message={error} />}  
+      {error && <Alert message={error} />}
+      {success && <Alert message={success} type="success" />}
 
-      {showCreateUser && <CreateUserForm users={users} setUsers={setUsers} hideForm={setShowCreateUser}/>}
-      {(showUpdateUser && userIdForUpdate) && <UpdateUserForm users={users} setUsers={setUsers} hideForm={setShowUpdateUser} idUser={userIdForUpdate}/>}
-          
+      {showCreateUser && <CreateUserForm users={users} setUsers={setUsers} hideForm={setShowCreateUser} />}
+      {(showUpdateUser && userIdForUpdate) && <UpdateUserForm users={users} setUsers={setUsers} hideForm={setShowUpdateUser} idUser={userIdForUpdate} />}
+
 
       <section>
         <div className="card">
@@ -87,17 +103,19 @@ function App() {
                         <td>{new Date(attributes.publishedAt).toDateString()}</td>
                         <td>
                           <div className="btn-group btn-group-sm" role="group">
-                            <button type="button" className="btn btn-warning" onClick={ () => handleEditUser(id)}><Icon icon="faPenToSquare" /></button>
-                            <button type="button" className="btn btn-danger"><Icon icon="faTrash" /></button>
+                            <button type="button" className="btn btn-warning" onClick={() => handleEditUser(id)}><Icon icon="faPenToSquare" /></button>
+                            <ConfirmAlert onClickDelete={() => handleDeleteUser(id)} />
                           </div>
                         </td>
                       </tr>
                     )
                   })
                   }
-
                 </tbody>
               </table>
+              <div className='btn-group btn-group-sm'>
+                  <button type="button" className='btn btn-outline-primary'></button>
+              </div>
             </div>
           </div>
         </div>
